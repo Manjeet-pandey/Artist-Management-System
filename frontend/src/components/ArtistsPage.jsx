@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { AddArtist } from "./models/AddArtist";
+import { AddArtist } from "./models/artist/AddArtist";
 import { LuEdit2 } from "react-icons/lu";
 import { AiOutlineDelete } from "react-icons/ai";
-import { EditArtist } from "./models/EditArtist";
+import { EditArtist } from "./models/artist/EditArtist";
 
 const ArtistsPage = () => {
   const [artistsData, setArtistsData] = useState([]);
