@@ -3,9 +3,12 @@ import axios from "axios";
 
 export const EditMusic = ({
   formData,
+  musicId,
+  setFormData,
+  artistData,
   setArtistData,
   artistId,
-  setShowAdd,
+  setShowEdit,
 }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,12 +18,19 @@ export const EditMusic = ({
     e.preventDefault();
     try {
       await axios
-        .put(`/artists/${artistId}/music/${musicId}`, formData)
+        .put(`/artists/${artistId}/music/${musicId}/`, formData)
         .then((response) => {
-          artistData.music.push(response.data);
-          setArtistData(artistData);
+          const updatedMusicIndex = artistData.music.findIndex(
+            (item) => item.id === musicId
+          );
+
+          if (updatedMusicIndex !== -1) {
+            // Replace the old music entry with the updated one in the artistData.music array
+            artistData.music[updatedMusicIndex] = response.data;
+            setArtistData({ ...artistData }); // Create a new object to trigger a state update
+          }
         });
-      setShowAdd(false);
+      setShowEdit(false);
       setFormData({
         artist_id: artistId,
         title: "",

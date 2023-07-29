@@ -3,8 +3,8 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { LuEdit2 } from "react-icons/lu";
 import { AiOutlineDelete } from "react-icons/ai";
-import { AddMusic } from "./models/AddMusic";
-import { EditMusic } from "./models/EditMusic";
+import { AddMusic } from "./models/music/AddMusic";
+import { EditMusic } from "./models/music/EditMusic";
 const genreMapping = {
   rnb: "R&B",
   classic: "Classic",
@@ -17,7 +17,14 @@ const ArtistDetailsPage = () => {
   const [showAdd, setShowAdd] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const { artistId } = useParams();
+  const [musicId, setMusicId] = useState(null);
   const [artistData, setArtistData] = useState(null);
+  const [formData, setFormData] = useState({
+    artist_id: artistId,
+    title: "",
+    album_name: "",
+    genre: "rnb",
+  });
 
   useEffect(() => {
     const fetchArtistDetails = async () => {
@@ -43,7 +50,10 @@ const ArtistDetailsPage = () => {
   const handleAddMusic = () => {
     setShowAdd(true);
   };
-  const handleEditMusic = () => {
+  const handleEditMusic = (songId) => {
+    setMusicId(songId);
+    const musicToEdit = music.find((music) => music.id === songId);
+    setFormData(musicToEdit);
     setShowEdit(true);
   };
   const handleDeleteMusic = async (musicId) => {
@@ -83,7 +93,17 @@ const ArtistDetailsPage = () => {
           </button>
         )}
       </div>
-      {showEdit && <EditMusic />}
+      {showEdit && (
+        <EditMusic
+          formData={formData}
+          musicId={musicId}
+          setFormData={setFormData}
+          artistData={artistData}
+          setArtistData={setArtistData}
+          artistId={artistId}
+          setShowEdit={setShowEdit}
+        />
+      )}
 
       <table className="w-full bg-white rounded-lg shadow-sm">
         <thead>

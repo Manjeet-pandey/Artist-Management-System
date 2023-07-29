@@ -33,7 +33,7 @@ class Music(models.Model):
     GENRE_CHOICES = {
         ('rnb', 'R&B'),
         ('classic', 'Classic'),
-        ('Contry', 'Contry'),
+        ('country', 'Country'),
         ('rock', 'Rock'),
         ('jazz', 'Jazz')
     }
