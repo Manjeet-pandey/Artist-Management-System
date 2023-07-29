@@ -1,0 +1,11 @@
+.sidebar-container {
+    flex: 0 0 250px; /* Sidebar width */
+    background-color: #f0f0f0;
+    /* Add any other styles you want for the sidebar */
+  }
+  
+  .outlet-container {
+    flex: 1; /* Outlet takes the remaining available space */
+    padding: 20px;
+    /* Add any other styles you want for the outlet container */
+  }

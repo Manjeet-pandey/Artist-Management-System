@@ -7,7 +7,6 @@ from rest_framework import permissions
 
 
 class ArtistListView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         artists = Artist.objects.all()
@@ -70,7 +69,7 @@ class MusicCreateView(APIView):
 
         serializer = MusicSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(artist=artist)
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
