@@ -1,7 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
+import AddArtistForm from "../../FormFields/artistForm";
+import { useMessageContext } from "../../../context/MessageContext";
 
-export const AddArtist = ({ setArtistsData, setShowForm }) => {
+export const AddArtist = ({ setArtistsData, setShowForm, mess }) => {
   const [newArtistData, setNewArtistData] = useState({
     name: "",
     dob: "",
@@ -10,19 +12,64 @@ export const AddArtist = ({ setArtistsData, setShowForm }) => {
     first_release_year: "",
     no_of_albums_released: "",
   });
+  const [errors, setErrors] = useState({
+    name: "",
+    dob: "",
+    address: "",
+    first_release_year: "",
+    no_of_albums_released: "",
+  });
+  const { setMessage } = useMessageContext();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewArtistData((prevData) => ({ ...prevData, [name]: value }));
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const {
+      name,
+      dob,
+      gender,
+      address,
+      first_release_year,
+      no_of_albums_released,
+    } = newArtistData;
+    const validationErrors = {};
+    if (!name.trim()) {
+      validationErrors.name = "Name field is required.";
+    }
+
+    if (!dob) {
+      validationErrors.dob = "Date of Birth field is required.";
+    }
+
+    if (!address.trim()) {
+      validationErrors.address = "Address field is required.";
+    }
+
+    if (!first_release_year || first_release_year <= 0) {
+      validationErrors.first_release_year = "Invalid First Release Year.";
+    }
+
+    if (!no_of_albums_released || no_of_albums_released <= 0) {
+      validationErrors.no_of_albums_released =
+        "Invalid Number of Albums Released.";
+    }
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
     try {
       await axios.post("/artists/", newArtistData).then((response) => {
         setArtistsData((prevData) => [...prevData, response.data]);
       });
-
-      console.log("Artist added successfully!");
+      setMessage("Artist added successfully.");
       setShowForm(false);
 
       setNewArtistData({
@@ -34,6 +81,7 @@ export const AddArtist = ({ setArtistsData, setShowForm }) => {
         no_of_albums_released: "",
       });
     } catch (error) {
+      setErrors(error.response.data);
       console.error("Error adding artist:", error);
     }
   };
@@ -60,75 +108,46 @@ export const AddArtist = ({ setArtistsData, setShowForm }) => {
                   </h3>
                   <div className="mt-2">
                     <form className="space-y-4">
-                      <div className="flex items-center">
-                        <label className="w-48">Name:</label>
-                        <input
-                          type="text"
-                          name="name"
-                          value={newArtistData.name}
-                          onChange={handleChange}
-                          className="flex-1 border rounded py-2 px-3"
-                        />
-                      </div>
-                      <div className="flex items-center">
-                        <label className="w-48">DOB:</label>
-                        <input
-                          type="date"
-                          name="dob"
-                          value={newArtistData.dob}
-                          onChange={handleChange}
-                          className="flex-1 border rounded py-2 px-3"
-                        />
-                      </div>
-
-                      <div className="flex items-center">
-                        <label className="w-48">Gender:</label>
-                        <select
-                          name="gender"
-                          value={newArtistData.gender}
-                          onChange={handleChange}
-                          className="flex-1 border rounded py-2 px-3"
-                        >
-                          <option value="M">Male</option>
-                          <option value="F">Female</option>
-                          <option value="O">Others</option>
-                        </select>
-                      </div>
-
-                      <div className="flex items-center">
-                        <label className="w-48">Address:</label>
-                        <input
-                          type="text"
-                          name="address"
-                          value={newArtistData.address}
-                          onChange={handleChange}
-                          className="flex-1 border rounded py-2 px-3"
-                        />
-                      </div>
-
-                      <div className="flex items-center">
-                        <label className="w-48">First Release Year:</label>
-                        <input
-                          type="number"
-                          name="first_release_year"
-                          value={newArtistData.first_release_year}
-                          onChange={handleChange}
-                          className="flex-1 border rounded py-2 px-3"
-                        />
-                      </div>
-
-                      <div className="flex items-center">
-                        <label className="w-48">
-                          Number of Albums Released:
-                        </label>
-                        <input
-                          type="number"
-                          name="no_of_albums_released"
-                          value={newArtistData.no_of_albums_released}
-                          onChange={handleChange}
-                          className="flex-1 border rounded py-2 px-3"
-                        />
-                      </div>
+                      {AddArtistForm.map((field) => (
+                        <div key={field.name}>
+                          <div className="flex items-center">
+                            <label className="w-48">{field.label}</label>
+                            {field.type === "select" ? (
+                              <select
+                                name={field.name}
+                                value={newArtistData[field.name]}
+                                onChange={handleChange}
+                                className="flex-1 border rounded py-2 px-3"
+                              >
+                                {field.options.map((option) => (
+                                  <option
+                                    value={option.value}
+                                    key={option.value}
+                                  >
+                                    {option.label}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <input
+                                type={field.type}
+                                name={field.name}
+                                value={newArtistData[field.name]}
+                                onChange={handleChange}
+                                className="flex-1 border rounded py-2 px-3"
+                              />
+                            )}
+                          </div>
+                          {errors[field.name] && (
+                            <div className="flex items-center">
+                              <span className="w-48"></span>
+                              <span className="text-red-500 text-xs">
+                                {errors[field.name]}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </form>
                   </div>
                 </div>

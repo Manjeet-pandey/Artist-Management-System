@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AddArtist } from "./models/artist/AddArtist";
 import { LuEdit2 } from "react-icons/lu";
 import { AiOutlineDelete } from "react-icons/ai";
 import { EditArtist } from "./models/artist/EditArtist";
+import { useMessageContext } from "../context/MessageContext";
 
 const ArtistsPage = () => {
   const [artistsData, setArtistsData] = useState([]);
@@ -12,7 +13,8 @@ const ArtistsPage = () => {
   const [showForm, setShowForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [artistId, setArtistId] = useState(null);
-
+  const fileRef = useRef(null);
+  const { message, setMessage } = useMessageContext();
   const [newArtistData, setNewArtistData] = useState({
     name: "",
     dob: "",
@@ -21,6 +23,45 @@ const ArtistsPage = () => {
     first_release_year: "",
     no_of_albums_released: "",
   });
+  const handleExport = () => {
+    axios
+      .get("/artists/export-artists/", { responseType: "blob" })
+      .then((response) => {
+        // Create a Blob from the response data
+        const blob = new Blob([response.data], { type: "text/csv" });
+
+        // Create a URL for the Blob
+        const url = window.URL.createObjectURL(blob);
+
+        // Create a link and click it to trigger the download
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "artists.csv";
+        link.click();
+
+        // Release the URL and remove the link
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.error("Error exporting data:", error);
+      });
+  };
+  const handleImport = (event) => {
+    const file = event.target.files[0];
+    const formData = new FormData();
+    formData.append("csv_file", file);
+
+    axios
+      .post("/artists/import-artists/", formData)
+      .then((response) => {
+        console.log("Import successful:", response.data.message);
+        // You can show a success message or perform other actions here
+      })
+      .catch((error) => {
+        console.error("Error importing data:", error);
+        // You can show an error message or perform other error handling here
+      });
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,6 +75,7 @@ const ArtistsPage = () => {
         console.error("Error fetching data:", error);
       }
     };
+    setMessage("");
 
     fetchData();
   }, []);
@@ -73,20 +115,46 @@ const ArtistsPage = () => {
   return (
     <div className="flex flex-col h-screen bg-gray-100 p-4">
       <div className="flex flex-row items-center justify-between">
-        <h1 className="text-2xl flex-0 font-bold mb-4">Artists Page</h1>
-        {showForm ? (
-          <AddArtist
-            setArtistsData={setArtistsData}
-            setShowForm={setShowForm}
-          />
-        ) : (
+        <h1 className="text-2xl flex-0 font-bold mb-4">
+          Artists Page{message && <span>{message}</span>}
+        </h1>
+        <div className="flex flex-row gap-10">
           <button
-            onClick={handleAddArtist}
+            onClick={handleExport}
             className="px-4 py-2 bg-blue-500 text-white rounded"
           >
-            Add Artist
+            Export
           </button>
-        )}
+          <input
+            type="file"
+            accept=".csv"
+            ref={fileRef}
+            onChange={handleImport}
+            className="hidden"
+          />
+          <button
+            onClick={() => {
+              fileRef.current.click();
+            }}
+            className="px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            Import
+          </button>
+
+          {showForm ? (
+            <AddArtist
+              setArtistsData={setArtistsData}
+              setShowForm={setShowForm}
+            />
+          ) : (
+            <button
+              onClick={handleAddArtist}
+              className="px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              Add Artist
+            </button>
+          )}
+        </div>
       </div>
       {showEditForm && (
         <EditArtist

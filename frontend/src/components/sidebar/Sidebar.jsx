@@ -11,7 +11,7 @@ export const Sidebar = () => {
     navigate("/");
   };
   return (
-    <div className="flex flex-col h-screen bg-gray-100 border-r p-4">
+    <div className="flex flex-col min-h-screen  bg-gray-100 border-r p-4">
       <div className="text-2xl font-bold mb-4">Logo</div>
       <div className="flex-grow">
         <ul className="list-none p-0">

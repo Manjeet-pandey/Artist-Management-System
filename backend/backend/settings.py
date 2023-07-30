@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'admin_panel',
     'corsheaders',
+    'import_export',
+
 ]
 
 MIDDLEWARE = [
@@ -73,6 +75,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [

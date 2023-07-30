@@ -13,12 +13,30 @@ export const AddMusic = ({
     album_name: "",
     genre: "rnb",
   });
+  const [errors, setErrors] = useState({
+    title: "",
+    album_name: "",
+  });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = {};
+    if (!formData.title.trim()) {
+      validationErrors.title = "Title is required";
+    }
+    if (!formData.album_name.trim()) {
+      validationErrors.album_name = "Album Name is required";
+    }
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
     try {
       await axios
         .post(`/artists/${artistId}/create/`, formData)
@@ -70,6 +88,14 @@ export const AddMusic = ({
                           className="flex-1 border rounded py-2 px-3"
                         />
                       </div>
+                      {errors["title"] && (
+                        <div className="flex items-center">
+                          <span className="w-48"></span>
+                          <span className="text-red-500 text-xs">
+                            {errors["title"]}
+                          </span>
+                        </div>
+                      )}
                       <div className="flex items-center">
                         <label className="w-48">Album Name</label>
                         <input
@@ -80,6 +106,14 @@ export const AddMusic = ({
                           className="flex-1 border rounded py-2 px-3"
                         />
                       </div>
+                      {errors["album_name"] && (
+                        <div className="flex items-center">
+                          <span className="w-48"></span>
+                          <span className="text-red-500 text-xs">
+                            {errors["album_name"]}
+                          </span>
+                        </div>
+                      )}
                       <div className="flex items-center">
                         <label className="w-48">Genre</label>
                         <select
