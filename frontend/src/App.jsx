@@ -11,6 +11,7 @@ import UsersPage from "./components/UsersPage";
 import ArtistsPage from "./components/ArtistsPage";
 import ArtistDetails from "./components/ArtistDetails";
 import { useAuth } from "./context/AuthContext";
+import { RegistrationPage } from "./pages/RegisterPage";
 
 const App = () => {
   const { isLoggedIn } = useAuth(); // Use the login hook
@@ -31,6 +32,12 @@ const App = () => {
           <Route path="artists" element={<ArtistsPage />} />
           <Route path="artists/:artistId" element={<ArtistDetails />} />
         </Route>
+        <Route
+          path="/register/"
+          element={
+            !isLoggedIn ? <RegistrationPage /> : <Navigate to="/dashboard" />
+          }
+        ></Route>
       </Routes>
     </Router>
   );

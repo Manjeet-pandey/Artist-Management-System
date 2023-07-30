@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'admin_panel',
     'corsheaders',
     'import_export',
+    'admin_auth',
 
 ]
 
