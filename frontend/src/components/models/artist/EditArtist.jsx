@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import AddArtistForm from "../../FormFields/artistForm";
+import { toast } from "react-toastify";
 export const EditArtist = ({
   newArtistData,
   setArtistsData,
@@ -54,6 +55,7 @@ export const EditArtist = ({
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      toast("Invalid form data");
       return;
     }
     try {
@@ -66,7 +68,7 @@ export const EditArtist = ({
             )
           );
         });
-
+      toast("Artist Edited Successfully  ");
       setShowEditForm(false);
       setNewArtistData({
         name: "",
@@ -78,7 +80,7 @@ export const EditArtist = ({
       });
     } catch (error) {
       setErrors(error.response.data);
-      console.error("Error adding artist:", error);
+      toast("Error editing artist  ");
     }
   };
   return (

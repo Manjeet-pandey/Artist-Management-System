@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import UserFormFields from "../../FormFields/userForm";
+import { toast } from "react-toastify";
 export const EditUser = ({
   newUserData,
   setUserData,
@@ -55,7 +56,7 @@ export const EditUser = ({
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      console.log(validationErrors);
+      toast("Invalid form fields");
       return;
     }
     try {
@@ -67,7 +68,7 @@ export const EditUser = ({
         );
       });
 
-      console.log("user Updated successfully!");
+      toast("User updated successfully");
       setShowEditForm(false);
       setNewUserData({
         first_name: "",
@@ -79,7 +80,7 @@ export const EditUser = ({
         address: "",
       });
     } catch (error) {
-      console.error("Error adding user:", error);
+      toast("Error updating user");
     }
   };
   return (

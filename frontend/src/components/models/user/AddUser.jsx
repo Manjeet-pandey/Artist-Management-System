@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import UserFormFields from "../../FormFields/userForm";
+import { toast } from "react-toastify";
 
 export const AddUser = ({ setUsersData, setShowAddForm }) => {
   const [newUserData, setNewUserData] = useState({
@@ -72,7 +73,7 @@ export const AddUser = ({ setUsersData, setShowAddForm }) => {
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      console.log(validationErrors);
+      toast("Invalid form fields");
       return;
     }
     try {
@@ -80,7 +81,7 @@ export const AddUser = ({ setUsersData, setShowAddForm }) => {
         setUsersData((prevData) => [...prevData, response.data]);
       });
 
-      console.log("User added successfully!");
+      toast("User added successfully");
       setShowAddForm(false);
 
       setNewUserData({
@@ -94,7 +95,7 @@ export const AddUser = ({ setUsersData, setShowAddForm }) => {
         address: "",
       });
     } catch (error) {
-      console.error("Error adding user:", error);
+      toast("Error adding user");
     }
   };
   return (

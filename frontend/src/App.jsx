@@ -27,7 +27,7 @@ const App = () => {
           path="/dashboard/"
           element={isLoggedIn ? <Dashboard /> : <Navigate to="/" />}
         >
-          <Route index element={<UsersPage />} />
+          <Route index element={<ArtistsPage />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="artists" element={<ArtistsPage />} />
           <Route path="artists/:artistId" element={<ArtistDetails />} />
@@ -37,6 +37,10 @@ const App = () => {
           element={
             !isLoggedIn ? <RegistrationPage /> : <Navigate to="/dashboard" />
           }
+        ></Route>
+        <Route
+          path="/login/"
+          element={!isLoggedIn ? <LoginPage /> : <Navigate to="/dashboard" />}
         ></Route>
       </Routes>
     </Router>

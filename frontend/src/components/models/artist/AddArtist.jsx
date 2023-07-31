@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import AddArtistForm from "../../FormFields/artistForm";
-import { useMessageContext } from "../../../context/MessageContext";
+
+import { toast } from "react-toastify";
 
 export const AddArtist = ({ setArtistsData, setShowForm, mess }) => {
   const [newArtistData, setNewArtistData] = useState({
@@ -19,7 +20,6 @@ export const AddArtist = ({ setArtistsData, setShowForm, mess }) => {
     first_release_year: "",
     no_of_albums_released: "",
   });
-  const { setMessage } = useMessageContext();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,6 +62,7 @@ export const AddArtist = ({ setArtistsData, setShowForm, mess }) => {
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      toast("Invalid form fields");
       return;
     }
 
@@ -69,7 +70,7 @@ export const AddArtist = ({ setArtistsData, setShowForm, mess }) => {
       await axios.post("/artists/", newArtistData).then((response) => {
         setArtistsData((prevData) => [...prevData, response.data]);
       });
-      setMessage("Artist added successfully.");
+      toast("Artist Added Successfully");
       setShowForm(false);
 
       setNewArtistData({
@@ -82,7 +83,7 @@ export const AddArtist = ({ setArtistsData, setShowForm, mess }) => {
       });
     } catch (error) {
       setErrors(error.response.data);
-      console.error("Error adding artist:", error);
+      toast("Error adding artist");
     }
   };
   return (

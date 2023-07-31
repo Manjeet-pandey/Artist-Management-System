@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export const EditMusic = ({
   formData,
@@ -25,11 +26,11 @@ export const EditMusic = ({
           );
 
           if (updatedMusicIndex !== -1) {
-            // Replace the old music entry with the updated one in the artistData.music array
             artistData.music[updatedMusicIndex] = response.data;
-            setArtistData({ ...artistData }); // Create a new object to trigger a state update
+            setArtistData({ ...artistData });
           }
         });
+      toast("Music edited successfully");
       setShowEdit(false);
       setFormData({
         artist_id: artistId,
@@ -38,7 +39,7 @@ export const EditMusic = ({
         genre: "rnb",
       });
     } catch (error) {
-      console.error("Error adding music:", error);
+      toast("Error editing music");
     }
   };
   return (

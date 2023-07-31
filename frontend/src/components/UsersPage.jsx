@@ -4,6 +4,7 @@ import { LuEdit2 } from "react-icons/lu";
 import { AiOutlineDelete } from "react-icons/ai";
 import { EditUser } from "../components/models/user/EditUser";
 import { AddUser } from "./models/user/AddUser";
+import { ToastContainer } from "react-toastify";
 
 const genderMapping = {
   M: "Male",

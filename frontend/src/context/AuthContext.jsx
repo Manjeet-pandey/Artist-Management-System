@@ -1,7 +1,7 @@
 import { createContext, useEffect, useContext, useState } from "react";
 import axios from "axios";
 const AuthContext = createContext();
-
+import { toast } from "react-toastify";
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
@@ -19,14 +19,27 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.post("/auth/login/", { username, password });
 
       if (response.status === 200) {
+        toast("Login Successful");
         setIsLoggedIn(true);
       }
     } catch (error) {
-      console.error("Login error:", error);
+      if (error.response.status === 401) {
+        toast("Invalid credentials");
+      } else {
+        toast("Server Error");
+      }
     }
   };
 
   const logout = () => {
+    axios
+      .post("/auth/logout/")
+      .then((response) => {
+        toast("Logged Out");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     setIsLoggedIn(false);
     localStorage.setItem("isLoggedIn", JSON.stringify(false));
   };

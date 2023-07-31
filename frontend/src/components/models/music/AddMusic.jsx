@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export const AddMusic = ({
   artistData,
@@ -34,6 +35,7 @@ export const AddMusic = ({
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      toast("Error form fields");
       return;
     }
 
@@ -44,6 +46,7 @@ export const AddMusic = ({
           artistData.music.push(response.data);
           setArtistData(artistData);
         });
+      toast("Music added successfully");
       setShowAdd(false);
       setFormData({
         artist_id: artistId,
@@ -52,7 +55,7 @@ export const AddMusic = ({
         genre: "rnb",
       });
     } catch (error) {
-      console.error("Error adding music:", error);
+      toast("Error adding music");
     }
   };
   return (

@@ -5,9 +5,9 @@ import { AddArtist } from "./models/artist/AddArtist";
 import { LuEdit2 } from "react-icons/lu";
 import { AiOutlineDelete } from "react-icons/ai";
 import { EditArtist } from "./models/artist/EditArtist";
-import { useMessageContext } from "../context/MessageContext";
 import Pagination from "./Pagination/Pagination";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const ArtistsPage = () => {
   const [artistsData, setArtistsData] = useState([]);
   const navigator = useNavigate();
@@ -18,7 +18,6 @@ const ArtistsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const fileRef = useRef(null);
-  const { message, setMessage } = useMessageContext();
   const [newArtistData, setNewArtistData] = useState({
     name: "",
     dob: "",
@@ -31,7 +30,6 @@ const ArtistsPage = () => {
     axios
       .get("/artists/export-artists/", { responseType: "blob" })
       .then((response) => {
-        // Create a Blob from the response data
         const blob = new Blob([response.data], { type: "text/csv" });
 
         // Create a URL for the Blob
@@ -45,9 +43,10 @@ const ArtistsPage = () => {
 
         // Release the URL and remove the link
         window.URL.revokeObjectURL(url);
+        toast("Exported Successfully");
       })
       .catch((error) => {
-        console.error("Error exporting data:", error);
+        toast("Error exporting data");
       });
   };
   const handleImport = (event) => {
@@ -58,18 +57,15 @@ const ArtistsPage = () => {
     axios
       .post("/artists/import-artists/", formData)
       .then((response) => {
-        console.log("Import successful:", response.data.message);
-        // You can show a success message or perform other actions here
+        toast("Imported Successfully");
       })
       .catch((error) => {
-        console.error("Error importing data:", error);
-        // You can show an error message or perform other error handling here
+        toast("Error during  Import");
       });
   };
 
   useEffect(() => {
     fetchData();
-    setMessage("");
   }, []);
   const fetchData = async (pageNumber = 1) => {
     try {
@@ -80,7 +76,7 @@ const ArtistsPage = () => {
       setCurrentPage(response.data.currentPage);
       setTotalPages(response.data.totalPage);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      toast("Error fetching data");
     }
   };
 
@@ -106,14 +102,13 @@ const ArtistsPage = () => {
         );
       });
 
-      console.log("Artist deleted successfully");
+      toast("Artist deleted successfully");
 
       setArtistsData((prevData) =>
         prevData.filter((artist) => artist.id !== artistId)
       );
     } catch (error) {
-      console.error("Error deleting artist:", error);
-      setMessage("");
+      toast("Error deleting artist");
     }
   };
   const handleEditArtist = async (artistId) => {
@@ -126,9 +121,7 @@ const ArtistsPage = () => {
   return (
     <div className="flex flex-col h-screen bg-gray-100 p-4">
       <div className="flex flex-row items-center justify-between">
-        <h1 className="text-2xl flex-0 font-bold mb-4">
-          Artists Page{message && <span>{message}</span>}
-        </h1>
+        <h1 className="text-2xl flex-0 font-bold mb-4">Artists Page</h1>
         <div className="flex flex-row gap-10">
           <button
             onClick={handleExport}
@@ -221,6 +214,7 @@ const ArtistsPage = () => {
           ))}
         </tbody>
       </table>
+
       <div className="pagination-buttons">
         <Pagination
           totalPages={totalPages}
