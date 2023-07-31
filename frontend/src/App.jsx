@@ -12,6 +12,7 @@ import ArtistsPage from "./components/ArtistsPage";
 import ArtistDetails from "./components/ArtistDetails";
 import { useAuth } from "./context/AuthContext";
 import { RegistrationPage } from "./pages/RegisterPage";
+import { NotFound } from "./pages/NotFound";
 
 const App = () => {
   const { isLoggedIn } = useAuth(); // Use the login hook
@@ -42,6 +43,7 @@ const App = () => {
           path="/login/"
           element={!isLoggedIn ? <LoginPage /> : <Navigate to="/dashboard" />}
         ></Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );

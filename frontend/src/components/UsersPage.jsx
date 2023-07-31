@@ -4,7 +4,7 @@ import { LuEdit2 } from "react-icons/lu";
 import { AiOutlineDelete } from "react-icons/ai";
 import { EditUser } from "../components/models/user/EditUser";
 import { AddUser } from "./models/user/AddUser";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 
 const genderMapping = {
   M: "Male",
@@ -36,7 +36,7 @@ const UsersPage = () => {
         console.log(response);
         setUserData(response.data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        toast("Error Fetching data");
       }
     };
 
@@ -51,9 +51,9 @@ const UsersPage = () => {
         );
       });
 
-      console.log("User deleted successfully");
+      toast("User deleted successfully");
     } catch (error) {
-      console.error("Error deleting User:", error);
+      toast("Error deleting user");
     }
   };
 
