@@ -6,6 +6,7 @@ import { LuEdit2 } from "react-icons/lu";
 import { AiOutlineDelete } from "react-icons/ai";
 import { EditArtist } from "./models/artist/EditArtist";
 import { useMessageContext } from "../context/MessageContext";
+import Pagination from "./Pagination/Pagination";
 
 const ArtistsPage = () => {
   const [artistsData, setArtistsData] = useState([]);
@@ -13,6 +14,9 @@ const ArtistsPage = () => {
   const [showForm, setShowForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [artistId, setArtistId] = useState(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const fileRef = useRef(null);
   const { message, setMessage } = useMessageContext();
   const [newArtistData, setNewArtistData] = useState({
@@ -64,21 +68,28 @@ const ArtistsPage = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("/artists/", {
-          withCredentials: true,
-        });
-        console.log(response);
-        setArtistsData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    setMessage("");
-
     fetchData();
+    setMessage("");
   }, []);
+  const fetchData = async (pageNumber = 1) => {
+    try {
+      const response = await axios.get(`/artists/?page=${pageNumber}`, {
+        withCredentials: true,
+      });
+      setArtistsData(response.data.data);
+      setCurrentPage(response.data.currentPage);
+      setTotalPages(response.data.totalPage);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber === currentPage) {
+      return;
+    }
+    fetchData(pageNumber);
+  };
 
   const handleClick = (artistId) => {
     navigator(`/dashboard/artists/${artistId}`);
@@ -102,9 +113,9 @@ const ArtistsPage = () => {
       );
     } catch (error) {
       console.error("Error deleting artist:", error);
+      setMessage("");
     }
   };
-
   const handleEditArtist = async (artistId) => {
     setArtistId(artistId);
     const artistToEdit = artistsData.find((artist) => artist.id === artistId);
@@ -210,6 +221,13 @@ const ArtistsPage = () => {
           ))}
         </tbody>
       </table>
+      <div className="pagination-buttons">
+        <Pagination
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+          currentPage={currentPage}
+        />
+      </div>
     </div>
   );
 };

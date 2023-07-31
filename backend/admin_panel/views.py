@@ -6,17 +6,40 @@ from rest_framework import status
 from .models import Artist, Music, User
 from .serializers import ArtistSerializer, MusicSerializer, UserSerializer
 from rest_framework import permissions
+from rest_framework.pagination import PageNumberPagination
 from tablib import Dataset
 import csv
 import io
+from django.core.paginator import Paginator
+
+
+class CustomPagination(PageNumberPagination):
+    page_size = 10  # Set the number of artists per page
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 
 class ArtistListView(APIView):
 
     def get(self, request):
         artists = Artist.objects.all()
-        serializer = ArtistSerializer(artists, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        paginator = Paginator(artists, 10)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        currentPage = page_obj.number
+        totalPage = page_obj.paginator.num_pages
+        nextPage = currentPage + 1 if page_obj.has_next() else None
+        prevPage = currentPage - 1 if page_obj.has_previous() else None
+        serializer = ArtistSerializer(page_obj, many=True)
+        response_data = {
+            'totalPage': totalPage,
+            'currentPage': currentPage,
+            'data': serializer.data
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = ArtistSerializer(data=request.data)
